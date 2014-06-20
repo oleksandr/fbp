@@ -12,6 +12,10 @@ This is optional. If you want to update the parser's code based on the grammer.p
 
 This will download and compile _peg_ binary, which you can use later to generate the parser.
 
+The following command will generate the parser:
+
+    peg -switch -inline grammar.peg
+
 Installation
 ---
 

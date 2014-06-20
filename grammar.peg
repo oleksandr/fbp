@@ -1,4 +1,3 @@
-
 package fbp
 
 type Fbp Peg {
