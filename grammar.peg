@@ -28,29 +28,27 @@ connection <-
     / bridge                  
   )                           
 
-bridge <-
+bridge <-                                   
 	(                           
-    port _                                  { p.inPort = p.port }
+    port _                                  { p.inPort = p.port; p.inPortIndex = p.index }
     node _                    
-    port                                    { p.outPort = p.port }
+    port                                    { p.outPort = p.port; p.outPortIndex = p.index }
   )                                         { p.createMiddlet() }
   / iip                       
   / leftlet                                 { p.createLeftlet() }
   / rightlet                                { p.createRightlet() }
 
-leftlet <-                    
-  (
-    node __                   
-    port                      
-  )                           
+leftlet <-     
+  (node _ portWithIndex)               
+  /
+  (node _ port)
 
 iip <- "'" <iipchar*> "'"                   { p.iip = buffer[begin:end] }       
 
-rightlet <-                   
-  (
-    port _                    
-    node                    
-  )                           
+rightlet <-    
+  (portWithIndex _ node)               
+  /
+  (port _ node)
 
 node <-                       
   (
@@ -67,6 +65,15 @@ component <-
 compMeta <- ":" <[a-zA-Z/=_,0-9]+>          { p.nodeMeta = buffer[begin:end] }  
 
 port <- <[A-Z.0-9_]+> __                    { p.port = buffer[begin:end] }        
+
+portWithIndex <-
+  (
+    <[A-Z.0-9_]+>                           { p.port = buffer[begin:end] }
+    "[" 
+    <[0-9]+>                                { p.index = buffer[begin:end] }
+    "]"                                    
+    __
+  )
 
 anychar <- [^\n\r]
 

@@ -1,6 +1,8 @@
 package fbp
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -23,10 +25,14 @@ func (p *Process) String() string {
 type Endpoint struct {
 	Process string `json:"process"`
 	Port    string `json:"port"`
+	Index   *int   `json:"index,omitempty"`
 }
 
 func (e *Endpoint) String() string {
-	return "(" + e.Process + ", " + e.Port + ")"
+	if e.Index != nil {
+		return fmt.Sprintf("(%s, %s[%v])", e.Process, e.Port, *e.Index)
+	}
+	return fmt.Sprintf("(%s, %s)", e.Process, e.Port)
 }
 
 //
@@ -40,11 +46,11 @@ type Connection struct {
 
 func (c *Connection) String() string {
 	if c.Data != "" {
-		return "(" + c.Data + " -> " + c.Target.String() + ")"
+		return fmt.Sprintf("(%s -> %s )", c.Data, c.Target.String())
 	} else if c.Source != nil {
-		return "(" + c.Source.String() + " -> " + c.Target.String() + ")"
+		return fmt.Sprintf("(%s -> %s)", c.Source, c.Target.String())
 	} else {
-		return "(????????? -> " + c.Target.String() + ")"
+		return fmt.Sprintf("(???????? -> %s)", c.Target.String())
 	}
 }
 
@@ -59,8 +65,11 @@ type BaseFbp struct {
 	// Private variables to keep state during .fbp parsing
 	iip               string
 	port              string
+	index             string
 	inPort            string
+	inPortIndex       string
 	outPort           string
+	outPortIndex      string
 	nodeProcessName   string
 	nodeComponentName string
 	nodeMeta          string
@@ -93,8 +102,16 @@ func (self *BaseFbp) createLeftlet() {
 		Process: self.createProcessName(self.nodeProcessName),
 		Port:    self.port,
 	}
+	if self.index != "" {
+		i, err := strconv.Atoi(self.index)
+		if err == nil {
+			self.srcEndpoint.Index = new(int)
+			*self.srcEndpoint.Index = i
+		}
+	}
 	self.nodeProcessName = ""
 	self.port = ""
+	self.index = ""
 }
 
 func (self *BaseFbp) createRightlet() {
@@ -102,6 +119,13 @@ func (self *BaseFbp) createRightlet() {
 	self.tgtEndpoint = &Endpoint{
 		Process: self.createProcessName(self.nodeProcessName),
 		Port:    self.port,
+	}
+	if self.index != "" {
+		i, err := strconv.Atoi(self.index)
+		if err == nil {
+			self.tgtEndpoint.Index = new(int)
+			*self.tgtEndpoint.Index = i
+		}
 	}
 	var connection *Connection
 	if self.srcEndpoint != nil {
@@ -119,6 +143,7 @@ func (self *BaseFbp) createRightlet() {
 
 	self.nodeProcessName = ""
 	self.port = ""
+	self.index = ""
 	self.srcEndpoint = nil
 	self.tgtEndpoint = nil
 	self.iip = ""
@@ -129,6 +154,12 @@ func (self *BaseFbp) createMiddlet() {
 	self.tgtEndpoint = &Endpoint{
 		Process: self.createProcessName(self.nodeProcessName),
 		Port:    self.inPort,
+	}
+	if self.inPortIndex != "" {
+		i, err := strconv.Atoi(self.inPortIndex)
+		if err == nil {
+			*self.tgtEndpoint.Index = i
+		}
 	}
 
 	var connection *Connection
@@ -194,6 +225,13 @@ func (self *BaseFbp) parseExportedPort(str string) (name string, endpoint *Endpo
 	parts = strings.Split(parts[0], ".")
 	endpoint = &Endpoint{}
 	endpoint.Port = strings.TrimSpace(parts[1])
+	if parts := strings.SplitN(endpoint.Port, "[", 2); len(parts) == 2 {
+		i, err := strconv.Atoi(strings.TrimSuffix(parts[1], "]"))
+		if err != nil {
+			endpoint.Port = parts[0]
+			*endpoint.Index = i
+		}
+	}
 	endpoint.Process = self.createProcessName(strings.TrimSpace(parts[0]))
 	return name, endpoint
 }

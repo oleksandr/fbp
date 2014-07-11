@@ -29,6 +29,20 @@ const (
 	OUTPORT=Process.OUT:RESULT
 	Read(ReadFile) OUT -> IN Process(Output)
 	`
+
+	graphArrayPorts string = `
+	'pattern1' -> IN[0] Router(router)
+	Router OUT[0] -> IN Log1(console)
+	'pattern2' -> IN[1] Router
+	Router OUT[1] -> IN Log2(console)
+	'pattern3' -> IN[2] Router
+	Router OUT[2] -> IN Log3(console)
+	'some data' -> DATA Router
+ 	`
+
+	graphArrayPortsOneline string = `
+	'pattern1' -> IN[0] Router(router) OUT[0] -> IN Log(console)
+ 	`
 )
 
 func testGraph(t *testing.T, graph string) *Fbp {
@@ -113,3 +127,25 @@ func TestGraphExportedInPort(t *testing.T) {
 		t.Fatal("Should be only 1 outports")
 	}
 }
+
+func TestGraphArrayPorts(t *testing.T) {
+	parser := testGraph(t, graphArrayPorts)
+	if len(parser.Processes) != 4 {
+		t.Fatal("Should be only 4 processes")
+	}
+	if len(parser.Connections) != 7 {
+		t.Fatal("Should be only 7 connections")
+	}
+}
+
+/*
+func TestGraphArrayPortsOneline(t *testing.T) {
+	parser := testGraph(t, graphArrayPortsOneline)
+	if len(parser.Processes) != 4 {
+		t.Fatal("Should be only 4 processes")
+	}
+	if len(parser.Connections) != 7 {
+		t.Fatal("Should be only 7 connections")
+	}
+}
+*/

@@ -8,7 +8,7 @@ Dependencies
 
 This is optional. If you want to update the parser's code based on the grammer.peg you need to install the following dependency:
 
-    go install github.com/pointlander/peg
+    go get github.com/pointlander/peg
 
 This will download and compile _peg_ binary, which you can use later to generate the parser.
 
@@ -21,7 +21,7 @@ Installation
 
 Use regular _go install_ or _go get_ command to download and install the _fbp_ library:
 
-    go install github.com/oleksandr/fbp
+    go get github.com/oleksandr/fbp
 
 The library already includes the generated parser.
 
