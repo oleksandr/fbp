@@ -16,9 +16,9 @@ line <-
 
 LineTerminator <- _ ","? comment? [\n\r]?
 
-comment <- _ "#" anychar*
+comment <- _ "#" anychar*                   
 
-connection <-                 
+connection <-                               
   (                           
   	(                         
       bridge 
@@ -26,7 +26,7 @@ connection <-
       connection              
     )
     / bridge                  
-  )                           
+  )                                         
 
 bridge <-                                   
 	(                           

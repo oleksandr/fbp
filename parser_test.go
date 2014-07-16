@@ -138,7 +138,6 @@ func TestGraphArrayPorts(t *testing.T) {
 	}
 }
 
-/*
 func TestGraphArrayPortsOneline(t *testing.T) {
 	parser := testGraph(t, graphArrayPortsOneline)
 	if len(parser.Processes) != 4 {
@@ -148,4 +147,3 @@ func TestGraphArrayPortsOneline(t *testing.T) {
 		t.Fatal("Should be only 7 connections")
 	}
 }
-*/
