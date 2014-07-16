@@ -8,8 +8,8 @@ start <- line* _ !.
 
 line <-
 	_ "EXPORT=" [A-Za-z.0-9_]+ ":" [A-Z0-9_]+ _ LineTerminator?
-  / _ "INPORT=" <[A-Za-z0-9_]+ "." [A-Z0-9_]+ ":" [A-Z0-9_]+> _ LineTerminator?   { p.createInport(buffer[begin:end]) }
-  / _ "OUTPORT=" <[A-Za-z0-9_]+ "." [A-Z0-9_]+ ":" [A-Z0-9_]+> _ LineTerminator?    { p.createOutport(buffer[begin:end]) }
+  / _ "INPORT=" <[A-Za-z0-9_]+ "." [A-Z0-9_\[\]]+ ":" [A-Z0-9_]+> _ LineTerminator?   { p.createInport(buffer[begin:end]) }
+  / _ "OUTPORT=" <[A-Za-z0-9_]+ "." [A-Z0-9_\[\]]+ ":" [A-Z0-9_]+> _ LineTerminator?    { p.createOutport(buffer[begin:end]) }
   / comment [\n\r]?
   / _ [\n\r]
   / _ connection _ LineTerminator?      

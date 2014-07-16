@@ -40,6 +40,15 @@ const (
 	'some data' -> DATA Router
  	`
 
+	graphExportedArrayPort = `
+	INPORT=Read.IN:FILENAME
+	INPORT=Read.OPTIONS:CONFIG
+	INPORT=Process.IN[0]:EXTRA
+	OUTPORT=Process.OUT[1]:RESULT
+	Read(ReadFile) OUT -> IN[0] Process(Output)
+	Process OUT[0] -> IN Log(Console)
+	`
+
 	graphArrayPortsOneline string = `
 	'pattern1' -> IN[0] Router(router) OUT[0] -> IN Log(console)
  	`
@@ -136,6 +145,10 @@ func TestGraphArrayPorts(t *testing.T) {
 	if len(parser.Connections) != 7 {
 		t.Fatal("Should be only 7 connections")
 	}
+}
+
+func TestGraphExportedArrayPort(t *testing.T) {
+	testGraph(t, graphExportedArrayPort)
 }
 
 func TestGraphArrayPortsOneline(t *testing.T) {
